@@ -12,8 +12,8 @@
 int main(int argc, char* argv[])
 {
 
-    if (argc != 3) {
-            std::cerr << "Usage: join_server <port> <join_size>\n";
+    if (argc != 2) {
+            std::cerr << "Usage: join_server <port>\n";
             return 1;
     
     }
@@ -21,9 +21,7 @@ int main(int argc, char* argv[])
     //std::cout << "SERVER PROGRAM" << std::endl;
     try
     {
-        g_port = static_cast<unsigned short>(std::stoi(argv[1]));     // порт
-        g_bulk_size = static_cast<std::size_t>(std::stoll(argv[2]));  // размер блока      
-       
+        g_port = static_cast<unsigned short>(std::stoi(argv[1]));     // порт     
         // Запускаем потоки вывода один раз
         async::threads_start();
         
