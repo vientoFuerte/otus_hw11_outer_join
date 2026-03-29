@@ -17,7 +17,7 @@ void parseCommand(const std::string& input) {
     std::string command;
     ss >> command; // Считываем первое слово (команду)
 
-    DLOG("parseCommand: operation=" << input << std::endl;)
+    DLOG("parseCommand: operation=" << input << std::endl)
 
     if (input.empty()) return;
     
@@ -26,6 +26,16 @@ void parseCommand(const std::string& input) {
         int id;
         // Ожидаем: INSERT table_name id name
         if (ss >> table >> id >> name) {
+            if (table == "A") {
+                tableA[id] = name;
+            } 
+            else if (table == "B") {
+                tableB[id] = name;
+            }
+            else {
+                std::cout << "Неизвестная таблица: " << table << std::endl;
+                return;
+            }
             std::cout << "Команда: INSERT, Таблица: " << table 
                       << ", ID: " << id << ", Имя: " << name << std::endl;
         }
@@ -34,6 +44,11 @@ void parseCommand(const std::string& input) {
         std::string table;
         // Ожидаем: TRUNCATE table_name
         if (ss >> table) {
+            if (table == "A") {
+                tableA.clear();
+            } else if (table == "B") {
+                tableB.clear();
+            }
             std::cout << "Команда: TRUNCATE, Таблица: " << table << std::endl;
         }
     } 
