@@ -2,9 +2,10 @@
 #define BOOST_TEST_MODULE AcyncServerTests
 #include <boost/test/included/unit_test.hpp>
 #include <fstream>
-#include "async.h"
-#include "join_server.h"
 #include <thread>
+#include "table.h"
+#include "join_server.h"
+
 
 //тест для статического блока (без фигурных скобок)
 BOOST_AUTO_TEST_CASE(static_blocks) {
@@ -15,8 +16,6 @@ BOOST_AUTO_TEST_CASE(static_blocks) {
     // Перехватываем std::cout
     old_cout = std::cout.rdbuf(output.rdbuf());
     
-    // Запускаем потоки 
-    //async::threads_start();
     
     size_t block_size = 3;
     const char* data = "1\n2\n3\n";
@@ -27,8 +26,7 @@ BOOST_AUTO_TEST_CASE(static_blocks) {
     // Восстанавливаем cout
     std::cout.rdbuf(old_cout);
     
-    // Останавливаем потоки после теста
-    async::threads_stop();
+
 }
 
 //тест для динамического блока (с фигурными скобками)
@@ -40,8 +38,6 @@ BOOST_AUTO_TEST_CASE(dynamic_blocks) {
     // Перехватываем std::cout
     old_cout = std::cout.rdbuf(output.rdbuf());
   
-    // Запускаем потоки 
-    //async::threads_start();
     
 
 
@@ -53,6 +49,4 @@ BOOST_AUTO_TEST_CASE(dynamic_blocks) {
     // Восстанавливаем cout
     std::cout.rdbuf(old_cout);
     
-    // Останавливаем потоки после теста
-   //async::threads_stop();
 }
