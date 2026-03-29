@@ -11,18 +11,17 @@ std::atomic_uint connection_id = 0;
 unsigned short g_port; 
 
 
-static std::string message = "TCP/IP Hello world\n";
-static std::string message_hash = "\n1234\n";
+static std::string message = "Hello from join server\n";
 
 // Реализация методов
 Connection::Connection(boost::asio::io_context& io_context) : socket(io_context)
 {
-    ctx_ = async::connect(g_bulk_size);
+
 }
 
 Connection::~Connection() 
 {
-    async::disconnect(ctx_);
+
 }
 
 std::shared_ptr<Connection> Connection::Create(boost::asio::io_context& io_context)
@@ -40,7 +39,7 @@ void Connection::start_read()
                 std::string line;
                 while(std::getline(is, line))
                 {
-                    async::receive(ctx_, line.c_str(), line.size());
+                    table::receive(line.c_str(), line.size());
                 }
                 start_read();
             } else {
@@ -54,12 +53,11 @@ void Connection::start_read()
                     std::string line;
                     while(std::getline(is, line))
                     {
-                        async::receive(ctx_, line.c_str(), line.size());
+                        table::receive(line.c_str(), line.size());
                     }
                 }
                 DLOG("Connection error, calling disconnect for ctx=" << ctx_ << std::endl);
-                async::disconnect(ctx_);
-                ctx_ = nullptr;
+ 
             }
         });
 }
@@ -90,7 +88,7 @@ void HandleAccept(std::shared_ptr<Connection> connection, const boost::system::e
 void ProcessConnection(std::shared_ptr<Connection> c)
 {
     auto msg = std::make_shared<std::string>(
-        message + " " + std::to_string(connection_id) + message_hash
+        message + " " + std::to_string(connection_id)
     );
     
     boost::asio::async_write(
