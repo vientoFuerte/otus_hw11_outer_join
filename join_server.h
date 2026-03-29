@@ -6,7 +6,7 @@
 #include <fstream>
 #include <boost/asio.hpp>
 #include "debug_settings.h"
-#include "async.h"
+#include "table.h"
 
 using boost::asio::ip::tcp;
 
@@ -21,7 +21,6 @@ extern unsigned short g_port;
 struct Connection : public std::enable_shared_from_this<Connection>
 {
    tcp::socket socket;
-   async::BulkContext* ctx_;
    boost::asio::streambuf streambuf_;
    
    void start_read();
