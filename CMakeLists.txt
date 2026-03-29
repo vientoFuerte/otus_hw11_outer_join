@@ -10,7 +10,7 @@ set(Boost_NO_BOOST_CMAKE ON)
 # Ищем Boost для основной программы
 find_package(Boost REQUIRED COMPONENTS filesystem system program_options regex)
 
-add_executable(join_server main.cpp join_server.cpp async.cpp)
+add_executable(join_server main.cpp join_server.cpp table.cpp)
 
 set_target_properties(join_server PROPERTIES
     CXX_STANDARD 17
@@ -29,9 +29,9 @@ target_link_libraries(join_server PRIVATE
 # Boost.Test
 if(WITH_BOOST_TEST AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp)
     # Для тестов нужен unit_test_framework
-    find_package(Boost REQUIRED COMPONENTS unit_test_framework filesystem program_options regex)
+    find_package(Boost REQUIRED COMPONENTS unit_test_framework filesystem)
     
-    add_executable(join_server_tests test.cpp join_server.cpp async.cpp)
+    add_executable(join_server_tests test.cpp join_server.cpp table.cpp)
     
     set_target_properties(join_server_tests PROPERTIES
         CXX_STANDARD 17
