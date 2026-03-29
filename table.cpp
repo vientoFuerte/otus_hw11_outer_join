@@ -1,4 +1,4 @@
-#include "async.h"
+#include "table.h"
 #include "thread_queue.h"
 #include <sstream>
 #include <string>
@@ -8,6 +8,10 @@
 
 namespace table {
 
+  std::map<int, std::string> tableA;
+  std::map<int, std::string> tableB;
+  
+  
 void parseCommand(const std::string& input) {
     std::stringstream ss(input);
     std::string command;
@@ -60,7 +64,6 @@ void receive(const char* data, std::size_t size) {
 }
 
 } // namespace table 
-
 
 
 
