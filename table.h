@@ -9,8 +9,7 @@
 
 namespace table {
 
-  std::map<int, std::string> tableA;
-  std::map<int, std::string> tableB;
+
 
 
   void receive(const char* data, std::size_t size);
