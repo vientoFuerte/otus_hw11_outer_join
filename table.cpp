@@ -27,14 +27,14 @@ void printTables()
     printTable(tableB);
 }
   
-void parseCommand(const std::string& input) {
+std::string parseCommand(const std::string& input) {
     std::stringstream ss(input);
     std::string command;
     ss >> command; // Считываем первое слово (команду)
 
-    DLOG("parseCommand: operation=" << input << std::endl)
+    DLOG("parseCommand: operation=" << input << std::endl;)
 
-    if (input.empty()) return;
+    if (input.empty()) return "ERR ...\n";
     
     if (command == "INSERT") {
         std::string table, name;
@@ -43,13 +43,14 @@ void parseCommand(const std::string& input) {
         if (ss >> table >> id >> name) {
             if (table == "A") {
                 tableA[id] = name;
+                return "OK\n";
             } 
             else if (table == "B") {
                 tableB[id] = name;
+                return "OK\n";
             }
             else {
-                std::cout << "Неизвестная таблица: " << table << std::endl;
-                return;
+                return "ERR Unknown table: " + table + "\n";
             }
             
         }
@@ -60,13 +61,20 @@ void parseCommand(const std::string& input) {
         if (ss >> table) {
             if (table == "A") {
                 tableA.clear();
+                return "OK\n";
             } else if (table == "B") {
-                tableB.clear();
+                tableB.clear();     
+                return "OK\n";  
+            }
+            else {
+                return "ERR Unknown table: " + table + "\n";
             }
             std::cout << "Команда: TRUNCATE, Таблица: " << table << std::endl;
         }
     } 
     else if (command == "INTERSECTION") {
+        std::ostringstream response;
+        response << "OK\n";
         for(const auto &pair: tableA)
         {
             auto it = tableB.find(pair.first);
@@ -76,10 +84,13 @@ void parseCommand(const std::string& input) {
             }
         }
         
-        std::cout << "Команда: INTERSECTION" << std::endl;
+        std::cout << "Команда: INTERSECTION" << std::endl; 
+        return response.str();
+        
     } 
     else if (command == "SYMMETRIC_DIFFERENCE") {        
-                
+        std::ostringstream response;
+        response << "OK\n"; 
         for(const auto &pair: tableA)
         {
             auto it = tableB.find(pair.first);
@@ -97,6 +108,8 @@ void parseCommand(const std::string& input) {
             }
         }
         std::cout << "Команда: SYMMETRIC_DIFFERENCE" << std::endl;
+        return response.str();
+        
     } 
     else {
         std::cout << "Неизвестная команда: " << command << std::endl;
@@ -113,9 +126,11 @@ void receive(const char* data, std::size_t size) {
     //чтобы работать как с входным потоком
     std::istringstream stream(input);
     std::string line;
+    std::string response;
     
     while (std::getline(stream, line))  {
-      parseCommand(line);
+      response = parseCommand(line);
+      std::cout << "Response: " << response;
     }
     
 }
