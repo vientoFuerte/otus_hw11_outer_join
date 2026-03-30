@@ -113,13 +113,15 @@ std::string parseCommand(const std::string& input) {
     } 
     else {
         std::cout << "Неизвестная команда: " << command << std::endl;
+        return "ERR Unknown command: " + command + "\n";  // Возвращаем ошибку
+
     }
     
-    printTables();
+   // printTables();
 }
 
 
-void receive(const char* data, std::size_t size) {
+std::string receive(const char* data, std::size_t size) {
 
     //  копируем в строку size символов из data
     std::string input(data, size);
@@ -130,9 +132,9 @@ void receive(const char* data, std::size_t size) {
     
     while (std::getline(stream, line))  {
       response = parseCommand(line);
-      std::cout << "Response: " << response;
+      //std::cout << "Response: " << response;
     }
-    
+    return response;
 }
 
 } // namespace table 
