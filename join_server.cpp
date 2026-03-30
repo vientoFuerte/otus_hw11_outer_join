@@ -4,14 +4,13 @@
 #include <string>
 
 // Глобальные переменные (определения)
-std::size_t g_bulk_size = 0;
 boost::asio::io_context io_context;
 std::unique_ptr<tcp::acceptor> acceptor;
 std::atomic_uint connection_id = 0;
 unsigned short g_port; 
 
 
-static std::string message = "Hello from join server\n";
+//static std::string message = "Hello from join server\n";
 
 // Реализация методов
 Connection::Connection(boost::asio::io_context& io_context) : socket(io_context)
@@ -39,7 +38,21 @@ void Connection::start_read()
                 std::string line;
                 while(std::getline(is, line))
                 {
-                    table::receive(line.c_str(), line.size());
+                    std::string response = table::receive(line.c_str(), line.size());
+                    
+                    // Копируем response в shared_ptr для безопасности
+                    // иначе response в async_write может быть уничтожена до завершения записи
+                    auto response_ptr = std::make_shared<std::string>(std::move(response));
+                    
+                    boost::asio::async_write(socket, 
+                     boost::asio::buffer(*response_ptr),
+                     [](boost::system::error_code ec, std::size_t) {
+                         if (ec) {
+                             // Ошибка записи - ничего не делаем
+                         }
+                     });
+                    
+                    
                 }
                 start_read();
             } else {
@@ -53,7 +66,21 @@ void Connection::start_read()
                     std::string line;
                     while(std::getline(is, line))
                     {
-                        table::receive(line.c_str(), line.size());
+                        std::string response = table::receive(line.c_str(), line.size());
+                        
+                        // Копируем response в shared_ptr для безопасности
+                        // иначе response в async_write может быть уничтожена до завершения записи
+                        auto response_ptr = std::make_shared<std::string>(std::move(response));
+                        
+                        boost::asio::async_write(socket, 
+                         boost::asio::buffer(*response_ptr),
+                         [](boost::system::error_code ec, std::size_t) {
+                             if (ec) {
+                                 // Ошибка записи - ничего не делаем
+                             }
+                         });
+                        
+                        
                     }
                 }
                 DLOG("Connection error, calling disconnect for ctx=" << ctx_ << std::endl);
@@ -75,11 +102,10 @@ void BeginAcceptConnection()
 void HandleAccept(std::shared_ptr<Connection> connection, const boost::system::error_code& err)
 {
     if (err) {
-        std::cout << err.message() << std::endl;
+        //std::cout << err.message() << std::endl;
         BeginAcceptConnection();
     }
     else {
-        connection_id++;
         ProcessConnection(connection);
         BeginAcceptConnection();
     } 
@@ -87,24 +113,6 @@ void HandleAccept(std::shared_ptr<Connection> connection, const boost::system::e
 
 void ProcessConnection(std::shared_ptr<Connection> c)
 {
-    auto msg = std::make_shared<std::string>(
-        message + " " + std::to_string(connection_id)
-    );
-    
-    boost::asio::async_write(
-        c->socket,
-        boost::asio::buffer(*msg),
-        [c, msg](const boost::system::error_code& err, size_t bytes_send) {
-            if(!err)
-            {
-                c->start_read();
-            }
-        }
-    );
+    c->start_read();
 }
 
-void HandleWrite(const boost::system::error_code& err, size_t bytes_send)
-{
-    (void)err;
-    std::cout << "SEND:" << bytes_send << std::endl;
-}
