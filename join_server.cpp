@@ -6,22 +6,8 @@
 // Глобальные переменные (определения)
 boost::asio::io_context io_context;
 std::unique_ptr<tcp::acceptor> acceptor;
-std::atomic_uint connection_id = 0;
 unsigned short g_port; 
 
-
-//static std::string message = "Hello from join server\n";
-
-// Реализация методов
-Connection::Connection(boost::asio::io_context& io_context) : socket(io_context)
-{
-
-}
-
-Connection::~Connection() 
-{
-
-}
 
 std::shared_ptr<Connection> Connection::Create(boost::asio::io_context& io_context)
 {
@@ -78,13 +64,10 @@ void Connection::start_read()
                              if (ec) {
                                  // Ошибка записи - ничего не делаем
                              }
-                         });
-                        
-                        
+                         });                   
                     }
                 }
                 DLOG("Connection error, calling disconnect for ctx=" << ctx_ << std::endl);
- 
             }
         });
 }
