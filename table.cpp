@@ -42,12 +42,28 @@ std::string parseCommand(const std::string& input) {
         // Ожидаем: INSERT table_name id name
         if (ss >> table >> id >> name) {
             if (table == "A") {
-                tableA[id] = name;
-                return "OK\n";
+                // Проверяем существование ключа
+                if (tableA.find(id) != tableA.end()) {
+                    return "ERR duplicate " + std::to_string(id) + "\n";
+                }
+                else
+                {
+                    tableA[id] = name;
+                    return "OK\n";
+                }
+
             } 
             else if (table == "B") {
-                tableB[id] = name;
-                return "OK\n";
+                // Проверяем существование ключа
+                if (tableB.find(id) != tableB.end()) {
+                    return "ERR duplicate " + std::to_string(id) + "\n";
+                }
+                else
+                {
+                    tableB[id] = name;
+                    return "OK\n";       
+                }
+
             }
             else {
                 return "ERR Unknown table: " + table + "\n";
@@ -74,29 +90,29 @@ std::string parseCommand(const std::string& input) {
     } 
     else if (command == "INTERSECTION") {
         std::ostringstream response;
-        response << "OK\n";
+        
         for(const auto &pair: tableA)
         {
             auto it = tableB.find(pair.first);
             if(it!= tableB.end())
             {
-               std::cout<<pair.first<<": " <<pair.second<<it->second<<std::endl;
+              // Формат: id,valueA,valueB
+              response << pair.first << "," << pair.second << "," << it->second << "\n";
             }
         }
-        
-        std::cout << "Команда: INTERSECTION" << std::endl; 
+        response << "OK\n";
         return response.str();
         
     } 
     else if (command == "SYMMETRIC_DIFFERENCE") {        
         std::ostringstream response;
-        response << "OK\n"; 
         for(const auto &pair: tableA)
         {
             auto it = tableB.find(pair.first);
             if(it == tableB.end())
             {
-               std::cout<<pair.first<<": " <<pair.second<<std::endl;
+                // Формат: id,valueA, (пустое значение для B)
+                response << pair.first << "," << pair.second << ",\n";
             }
         }
         for(const auto &pair: tableB)
@@ -104,20 +120,16 @@ std::string parseCommand(const std::string& input) {
             auto it = tableA.find(pair.first);
             if(it == tableA.end())
             {
-               std::cout<<pair.first<<": " <<pair.second<<std::endl;
+               response << pair.first << ",," << pair.second << "\n";
             }
         }
-        std::cout << "Команда: SYMMETRIC_DIFFERENCE" << std::endl;
+        response << "OK\n"; 
         return response.str();
         
     } 
     else {
-        std::cout << "Неизвестная команда: " << command << std::endl;
         return "ERR Unknown command: " + command + "\n";  // Возвращаем ошибку
-
     }
-    
-   // printTables();
 }
 
 
@@ -132,7 +144,6 @@ std::string receive(const char* data, std::size_t size) {
     
     while (std::getline(stream, line))  {
       response = parseCommand(line);
-      //std::cout << "Response: " << response;
     }
     return response;
 }
