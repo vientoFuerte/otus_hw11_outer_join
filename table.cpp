@@ -8,9 +8,24 @@
 
 namespace table {
 
-  std::map<int, std::string> tableA;
-  std::map<int, std::string> tableB;
+std::map<int, std::string> tableA;
+std::map<int, std::string> tableB;
   
+//Распечатать содержимое таблицы
+void printTable(const std::map<int, std::string>& table)
+{
+    for(const auto &pair: table)
+    {
+       std::cout<<pair.first<<": " <<pair.second<<std::endl;
+    }
+}
+//Распечатать содержимое обеих таблиц
+void printTables()
+{
+    std::cout << "-----------------" << std::endl;
+    printTable(tableA);
+    printTable(tableB);
+}
   
 void parseCommand(const std::string& input) {
     std::stringstream ss(input);
@@ -36,8 +51,7 @@ void parseCommand(const std::string& input) {
                 std::cout << "Неизвестная таблица: " << table << std::endl;
                 return;
             }
-            std::cout << "Команда: INSERT, Таблица: " << table 
-                      << ", ID: " << id << ", Имя: " << name << std::endl;
+            
         }
     } 
     else if (command == "TRUNCATE") {
@@ -53,14 +67,42 @@ void parseCommand(const std::string& input) {
         }
     } 
     else if (command == "INTERSECTION") {
+        for(const auto &pair: tableA)
+        {
+            auto it = tableB.find(pair.first);
+            if(it!= tableB.end())
+            {
+               std::cout<<pair.first<<": " <<pair.second<<it->second<<std::endl;
+            }
+        }
+        
         std::cout << "Команда: INTERSECTION" << std::endl;
     } 
-    else if (command == "SYMMETRIC_DIFFERENCE") {
+    else if (command == "SYMMETRIC_DIFFERENCE") {        
+                
+        for(const auto &pair: tableA)
+        {
+            auto it = tableB.find(pair.first);
+            if(it == tableB.end())
+            {
+               std::cout<<pair.first<<": " <<pair.second<<std::endl;
+            }
+        }
+        for(const auto &pair: tableB)
+        {
+            auto it = tableA.find(pair.first);
+            if(it == tableA.end())
+            {
+               std::cout<<pair.first<<": " <<pair.second<<std::endl;
+            }
+        }
         std::cout << "Команда: SYMMETRIC_DIFFERENCE" << std::endl;
     } 
     else {
         std::cout << "Неизвестная команда: " << command << std::endl;
     }
+    
+    printTables();
 }
 
 
