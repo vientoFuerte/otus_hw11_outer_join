@@ -10,10 +10,8 @@
 
 using boost::asio::ip::tcp;
 
-extern std::size_t g_bulk_size;
 extern boost::asio::io_context io_context;
 extern std::unique_ptr<tcp::acceptor> acceptor;
-extern std::atomic_uint connection_id;
 extern unsigned short g_port; 
 
 
@@ -23,12 +21,12 @@ struct Connection : public std::enable_shared_from_this<Connection>
    tcp::socket socket;
    boost::asio::streambuf streambuf_;
    
+   Connection(boost::asio::io_context& io_context) : socket(io_context) {}
+
    void start_read();
    
    static std::shared_ptr<Connection> Create(boost::asio::io_context& io_context);
    
-   Connection(boost::asio::io_context& io_context);
-   ~Connection();
 };
 
 // Функции
