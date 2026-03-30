@@ -1,52 +1,55 @@
 
-#define BOOST_TEST_MODULE AcyncServerTests
+#define BOOST_TEST_MODULE JoinServerTests
 #include <boost/test/included/unit_test.hpp>
-#include <fstream>
 #include <thread>
 #include "table.h"
 #include "join_server.h"
 
 
-//тест для статического блока (без фигурных скобок)
-BOOST_AUTO_TEST_CASE(static_blocks) {
+//тест вставки в таблицу и проверки дубликата
+BOOST_AUTO_TEST_CASE(test_insert_and_duplicate) {
 
-    boost::test_tools::output_test_stream output;
-    std::streambuf* old_cout;
-    
-    // Перехватываем std::cout
-    old_cout = std::cout.rdbuf(output.rdbuf());
-    
-    
-    size_t block_size = 3;
-    const char* data = "1\n2\n3\n";
-    const char* expected = "\nbulk : 1, 2, 3";
-  
+    std::string test1 = "INSERT A 1 apple\n";
+    std::string test2 = "INSERT A 1 apple2\n";
+    std::string test3 = "INSERT B 1 apple\n";
 
-
-    // Восстанавливаем cout
-    std::cout.rdbuf(old_cout);
+    // Очищаем таблицы перед тестом
+    table::tableA.clear();
+    table::tableB.clear();
     
-
+    // Успешная вставка
+    std::string response1 = table::receive(test1.c_str(), test1.size());
+    BOOST_CHECK(response1 == "OK\n");
+    
+    // Вставка с дубликатом
+    std::string response2 = table::receive(test2.c_str(), test2.size());
+    BOOST_CHECK(response2 == "ERR duplicate 1\n");
+    
+    // Вставка в таблицу B
+    std::string response3 = table::receive(test3.c_str(), test3.size());
+    BOOST_CHECK(response3 == "OK\n");
 }
 
-//тест для динамического блока (с фигурными скобками)
-BOOST_AUTO_TEST_CASE(dynamic_blocks) {
 
-    boost::test_tools::output_test_stream output;
-    std::streambuf* old_cout;
+//тест truncate
+BOOST_AUTO_TEST_CASE(test_truncate) {
+
+    std::string insert1 = "INSERT A 1 test1\n";
+    std::string insert2 = "INSERT A 2 test2\n";
+    std::string truncateA = "TRUNCATE A\n";
+    std::string truncateB = "TRUNCATE B\n";
     
-    // Перехватываем std::cout
-    old_cout = std::cout.rdbuf(output.rdbuf());
-  
+    table::tableA.clear();
+    table::tableB.clear();
     
+    // Добавляем данные
+    table::receive(insert1.c_str(), insert1.size());
+    table::receive(insert2.c_str(), insert2.size());
 
-
-
-
-    // Проверяем консольный вывод
-    //BOOST_CHECK(output.is_equal(expected));
-
-    // Восстанавливаем cout
-    std::cout.rdbuf(old_cout);
+    // Проверяем что данные есть
+    BOOST_CHECK(table::tableA.size() == 2);
     
+    std::string response = table::receive(truncateA.c_str(), truncateA.size());
+    BOOST_CHECK(response == "OK\n");
+    BOOST_CHECK(table::tableA.empty());
 }
