@@ -35,4 +35,3 @@ struct Connection : public std::enable_shared_from_this<Connection>
 void BeginAcceptConnection();
 void HandleAccept(std::shared_ptr<Connection> connection, const boost::system::error_code& err);
 void ProcessConnection(std::shared_ptr<Connection> c);
-void HandleWrite(const boost::system::error_code& err, size_t bytes_send);
