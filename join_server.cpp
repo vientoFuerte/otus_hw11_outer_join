@@ -24,7 +24,7 @@ void Connection::start_read()
                 std::string line;
                 while(std::getline(is, line))
                 {
-                    std::string response = table::receive(line.c_str(), line.size());
+                    std::string response = table::receive(line);
                     
                     // Копируем response в shared_ptr для безопасности
                     // иначе response в async_write может быть уничтожена до завершения записи
@@ -52,7 +52,7 @@ void Connection::start_read()
                     std::string line;
                     while(std::getline(is, line))
                     {
-                        std::string response = table::receive(line.c_str(), line.size());
+                        std::string response = table::receive(line);
                         
                         // Копируем response в shared_ptr для безопасности
                         // иначе response в async_write может быть уничтожена до завершения записи
