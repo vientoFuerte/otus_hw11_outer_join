@@ -18,15 +18,15 @@ BOOST_AUTO_TEST_CASE(test_insert_and_duplicate) {
     table::tableB.clear();
     
     // Успешная вставка
-    std::string response1 = table::receive(test1.c_str(), test1.size());
+    std::string response1 = table::receive(test1);
     BOOST_CHECK(response1 == "OK\n");
     
     // Вставка с дубликатом
-    std::string response2 = table::receive(test2.c_str(), test2.size());
+    std::string response2 = table::receive(test2);
     BOOST_CHECK(response2 == "ERR duplicate 1\n");
     
     // Вставка в таблицу B
-    std::string response3 = table::receive(test3.c_str(), test3.size());
+    std::string response3 = table::receive(test3);
     BOOST_CHECK(response3 == "OK\n");
 }
 
@@ -43,13 +43,13 @@ BOOST_AUTO_TEST_CASE(test_truncate) {
     table::tableB.clear();
     
     // Добавляем данные
-    table::receive(insert1.c_str(), insert1.size());
-    table::receive(insert2.c_str(), insert2.size());
+    table::receive(insert1);
+    table::receive(insert2);
 
     // Проверяем что данные есть
     BOOST_CHECK(table::tableA.size() == 2);
     
-    std::string response = table::receive(truncateA.c_str(), truncateA.size());
+    std::string response = table::receive(truncateA);
     BOOST_CHECK(response == "OK\n");
     BOOST_CHECK(table::tableA.empty());
 }
