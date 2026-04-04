@@ -12,5 +12,5 @@ namespace table {
   extern std::map<int, std::string> tableA;
   extern std::map<int, std::string> tableB;
 
-  std::string receive(const char* data, std::size_t size);
+  std::string receive(const std::string& data);
 }
